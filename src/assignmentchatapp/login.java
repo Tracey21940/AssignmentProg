@@ -17,26 +17,29 @@ public class login {
         Scanner scan = new Scanner(System.in);
         String loginUsername;
         String loginPassword;
+        boolean loggedIn = false;
         
-        System.out.println("Enter username");
-        loginUsername = scan.nextLine();
-        
-        System.out.println("Enter password");
-        loginPassword = scan.nextLine();
-        
-        // Call checkUserDetails to validate login
-        if (checkUserDetails(loginUsername, loginPassword)) {
+        // Keep asking until correct details are entered
+        while (!loggedIn) {
+            System.out.println("Enter username:");
+            loginUsername = scan.nextLine();
+            
+            if (!loginUsername.equals(register.username)) {
+                System.out.println("Username is incorrect. Try again.\n");
+                continue; // go back to start of loop
+            }
+            
+            System.out.println("Enter password:");
+            loginPassword = scan.nextLine();
+            
+            if (!loginPassword.equals(register.password)) {
+                System.out.println("Password is incorrect. Try again.\n");
+                continue; // ask again
+            }
+            
+            // If both correct:
             System.out.println("Login successful! Welcome " + register.name + " " + register.surname);
-        } else {
-            System.out.println("Login failed. Please try again.");
+            loggedIn = true;
         }
     }//End of log method
-    
-    public boolean checkUserDetails(String username, String password){
-        if(username.equals(register.username) && password.equals(register.password)){
-            return true;
-        } else {
-            return false;
-        }
-    }
 }//End of the login class

@@ -43,6 +43,7 @@ class RegistrationClass {
         cellphoneNum = scan.nextLine();
         }while(!checkCellNum(cellphoneNum));
         
+        System.out.println("\n===  Login ===");
         login logged = new login(this);
         logged.log();
         
