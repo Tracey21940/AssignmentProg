@@ -53,10 +53,10 @@ class RegistrationClass {
     public boolean checkUsername(String username){
         //username must have a undecore(_) and be no longer than five characers
         if(username.contains("_") && username.length() <= 5){
-            System.out.println("Username is successfully captured");
+            System.out.println("Username is successfully captured.");
             return true;
         }else{
-            System.out.println("Your username didn't meet the requirements");
+            System.out.println("Username is not correctly formatted, \n please ensure that your username contains an underscore \n and is no more than five characters in length.");
             return false;
         }
     }//End of checkUsename method
@@ -75,9 +75,10 @@ class RegistrationClass {
         boolean hasSpecialChar = password.matches(".*[!@#$%^&*()_-].*");
         
         if(hasMinLength && hasUppercase && hasNum && hasSpecialChar){
+            System.out.println("Username is successfully captured.");
             return true;
         }else{
-            System.out.println("Your password didn't meet the following conditions...");
+            System.out.println("Password is not correctly formatted; \n please ensure that your password contains at least eight characters \n , a capital letter, a number, and a special character.");
             
             return false;
         }
@@ -94,10 +95,10 @@ class RegistrationClass {
         boolean hasMinLength = cellphoneNum.length() == 12;
     
         if(countryCode && hasDigits && hasMinLength){
-        System.out.println("Phone number has been successfully captured");
+        System.out.println("Cell phone number successfully added");
             return true;
         }else{
-            System.out.println("Phone number did't meet the conditions try again");
+            System.out.println("Cell phone number incorrectly formatted or does not \n contain international code.");
             return false;
         }
     }

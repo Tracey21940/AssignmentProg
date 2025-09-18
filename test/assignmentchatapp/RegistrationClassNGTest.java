@@ -64,22 +64,39 @@ public class RegistrationClassNGTest {
 //        fail("The test case is a prototype.");
 //    }
     
-RegistrationClass test = new RegistrationClass();
+RegistrationClass reg = new RegistrationClass();
 
-            @Test
-public void validLoginTest(){
-    Assert.assertTrue(test.checkUsername("Trac_"));
+    // Username Tests
+    @Test
+    public void testCorrectUsername() {
+        assertTrue(reg.checkUsername("Trac_"));  // Expected true
+    }
 
-}
+    @Test
+    public void testIncorrectUsername() {
+        assertFalse(reg.checkUsername("tracey!!!!!!!"));  // Expected false
+    }
 
-@Test
-public void LoginWithoutHastagTest(){
-    Assert.assertTrue(test.checkPassword("Tracey41@@"));
+    // Password Tests
+    @Test
+    public void testCorrectPassword() {
+        assertTrue(reg.checkPassword("Tracey41@@"));  // Expected true
+    }
 
-}
+    @Test
+    public void testIncorrectPassword() {
+        assertFalse(reg.checkPassword("password"));  // Expected false
+    }
 
-@Test
-public void ShortLoginTest(){
-Assert.assertTrue(test.checkCellNum("+27604644789"));
-}
+    // Cell Number Tests
+    @Test
+    public void testCorrectCellNumber() {
+        assertTrue(reg.checkCellNum("+27604644789"));  // Expected true
+    }
+
+    @Test
+    public void testIncorrectCellNumber() {
+        assertFalse(reg.checkCellNum("08366553"));  // Expected false
+    }
+
 }

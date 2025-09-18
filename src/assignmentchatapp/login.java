@@ -2,31 +2,27 @@ package assignmentchatapp;
 
 import java.util.Scanner;
 
-/**
- *
- * @author 
- */
 public class login {
-    RegistrationClass register;
+    private RegistrationClass register;
     
-    public login(RegistrationClass register){
+    public login(RegistrationClass register) {
         this.register = register;
     }
     
-    public void log(){
+    // === Interactive login with Scanner (for real use) ===
+    public void log() {
         Scanner scan = new Scanner(System.in);
         String loginUsername;
         String loginPassword;
         boolean loggedIn = false;
         
-        // Keep asking until correct details are entered
         while (!loggedIn) {
             System.out.println("Enter username:");
             loginUsername = scan.nextLine();
             
             if (!loginUsername.equals(register.username)) {
                 System.out.println("Username is incorrect. Try again.\n");
-                continue; // go back to start of loop
+                continue;
             }
             
             System.out.println("Enter password:");
@@ -34,12 +30,17 @@ public class login {
             
             if (!loginPassword.equals(register.password)) {
                 System.out.println("Password is incorrect. Try again.\n");
-                continue; // ask again
+                continue;
             }
             
-            // If both correct:
-            System.out.println("Login successful! Welcome " + register.name + " " + register.surname);
+            System.out.println("Login successful! Welcome " 
+                    + register.name + " " + register.surname +", its great to see you again.");
             loggedIn = true;
         }
-    }//End of log method
-}//End of the login class
+    }
+    
+    // === Non-interactive method (for testing) ===
+    public boolean checkUserDetails(String username, String password) {
+        return username.equals(register.username) && password.equals(register.password);
+    }
+}
