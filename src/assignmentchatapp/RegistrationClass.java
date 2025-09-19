@@ -56,7 +56,7 @@ class RegistrationClass {
             System.out.println("Username is successfully captured.");
             return true;
         }else{
-            System.out.println("Username is not correctly formatted, \n please ensure that your username contains an underscore \n and is no more than five characters in length.");
+            System.out.println("Username is not correctly formatted,\nplease ensure that your username contains an underscore\nand is no more than five characters in length.");
             return false;
         }
     }//End of checkUsename method
@@ -78,7 +78,7 @@ class RegistrationClass {
             System.out.println("Username is successfully captured.");
             return true;
         }else{
-            System.out.println("Password is not correctly formatted; \n please ensure that your password contains at least eight characters \n , a capital letter, a number, and a special character.");
+            System.out.println("Password is not correctly formatted;\nplease ensure that your password contains at least eight characters,\na capital letter, a number, and a special character.");
             
             return false;
         }
@@ -86,20 +86,16 @@ class RegistrationClass {
     
     //It should have the SA code
     public boolean checkCellNum(String cellphoneNum) {
-    //contains county code
-        boolean countryCode = cellphoneNum.contains("+27");
-    
-    //contains digits
-        boolean hasDigits = cellphoneNum.matches(".*\\d{9}.*");
-    
-        boolean hasMinLength = cellphoneNum.length() == 12;
-    
-        if(countryCode && hasDigits && hasMinLength){
-        System.out.println("Cell phone number successfully added");
-            return true;
-        }else{
-            System.out.println("Cell phone number incorrectly formatted or does not \n contain international code.");
-            return false;
-        }
+    // Regex: must start with +27 and followed by 9 digits
+    boolean isValid = cellphoneNum.matches("^\\+27\\d{9}$");    //OpenAI. 2025. ChatGPT (GPT-5) [AI chatbot]. Available at: https://chat.openai.com
+                                                                //(Accessed: 19 September 2025).
+
+    if(isValid) {
+        System.out.println("Cell number successfully captured.");
+        return true;
+    } else {
+        System.out.println("Cell number is incorrectly formatted or does not contain an international code, please correct the number and try again.");
+        return false;
     }
+}
    }//End of registration class
