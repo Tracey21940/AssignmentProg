@@ -75,7 +75,7 @@ class RegistrationClass {
         boolean hasSpecialChar = password.matches(".*[!@#$%^&*()_-].*");
         
         if(hasMinLength && hasUppercase && hasNum && hasSpecialChar){
-            System.out.println("Username is successfully captured.");
+            System.out.println("Username is successfully captured..");
             return true;
         }else{
             System.out.println("Password is not correctly formatted;\nplease ensure that your password contains at least eight characters,\na capital letter, a number, and a special character.");
