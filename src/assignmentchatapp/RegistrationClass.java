@@ -4,6 +4,7 @@
  */
 package assignmentchatapp;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 /**
  *
  * @author Tracey_Obi

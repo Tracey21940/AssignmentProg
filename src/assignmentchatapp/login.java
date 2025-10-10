@@ -36,6 +36,9 @@ public class login {
             System.out.println("Login successful! Welcome " 
                     + register.name + " " + register.surname +", its great to see you again.");
             loggedIn = true;
+            System.out.println("Welcome to QuickChat, " + register.name + "!");
+                Message messageApp = new Message();
+                messageApp.mainMenu();
         }
     }
     
