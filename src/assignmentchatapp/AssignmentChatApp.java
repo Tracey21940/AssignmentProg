@@ -16,7 +16,7 @@ public class AssignmentChatApp {
     public static void main(String[] args) {
         System.out.println("===  Registration ===");
         RegistrationClass register = new RegistrationClass();
-        register.userInput();
+        register.userInput(); // register and (on success) redirect to login & quickchat
     }
     
 }
