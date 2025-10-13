@@ -31,7 +31,7 @@ public class Message {
     // ============================================================
     public void mainMenu() {
         while (true) {
-            String[] options = {"Send Message", "View Stored Messages", "Quit"};
+            String[] options = {"Send Message", "Show recently sent messages(Coming Soon)", "Quit"};
             int choice = JOptionPane.showOptionDialog(null,
                     "Welcome to QuickChat! What would you like to do?",
                     "QuickChat Main Menu",
@@ -133,7 +133,7 @@ public class Message {
             messageHash = createMessageHash(messageID, messageText);
 
             // Choose action
-            String[] actions = {"Send Message", "Disregard", "Store for Later"};
+            String[] actions = {"Send Message", "Store for Later", "Disregard"};
             int choice = JOptionPane.showOptionDialog(null,
                     "What would you like to do with this message?",
                     "Message Options",
@@ -150,11 +150,11 @@ public class Message {
                     printMessageDetails();
                     JOptionPane.showMessageDialog(null, "Message sent successfully!");
                 }
-                case 1 -> JOptionPane.showMessageDialog(null, "Message disregarded.");
-                case 2 -> {
+                case 1 -> {
                     storeMessage();
                     JOptionPane.showMessageDialog(null, "Message stored for later.");
                 }
+                case 2 -> JOptionPane.showMessageDialog(null, "Message disregarded.");
                 default -> JOptionPane.showMessageDialog(null, "No action selected.");
             }
         }
