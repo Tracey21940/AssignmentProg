@@ -2,262 +2,216 @@ package assignmentchatapp;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.regex.Pattern;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- * Message
- * - QuickChat core: send/store/discard messages
- * - validation helpers for unit tests
- * - persistent message storage to messages.json
+ * QuickChat Message System with full GUI interaction using JOptionPane.
+ * Handles sending, storing, and validating messages in an interactive pop-up environment.
  *
- * Methods are designed to be unit-testable (return values rather than only printing).
+ * @author Tracey_Obi
+ * @improved GPT-5 (2025)
  */
 public class Message {
 
-    // counters and storage (shared across instances)
+    // === Shared State ===
     private static int numMessagesSent = 0;
     private static JSONArray storedMessages = new JSONArray();
 
-    // instance fields (current message)
+    // === Message Fields ===
     private String messageID;
     private String recipient;
     private String messageText;
     private String messageHash;
 
-    private final Scanner scanner = new Scanner(System.in);
+    // ============================================================
+    // MAIN MENU
+    // ============================================================
+    public void mainMenu() {
+        while (true) {
+            String[] options = {"Send Message", "View Stored Messages", "Quit"};
+            int choice = JOptionPane.showOptionDialog(null,
+                    "Welcome to QuickChat! What would you like to do?",
+                    "QuickChat Main Menu",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
 
-    // ---------------------------
-    // Public helpers for testing
-    // ---------------------------
-    public void resetForTests() {
-        numMessagesSent = 0;
-        storedMessages = new JSONArray();
+            switch (choice) {
+                case 0 -> sendMessage();
+                case 1 -> showStoredMessages();
+                case 2, JOptionPane.CLOSED_OPTION -> {
+                    JOptionPane.showMessageDialog(null, "Goodbye!", "Exit", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
+                default -> JOptionPane.showMessageDialog(null, "Invalid option selected.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
-    public int getNumMessagesSent() {
-        return numMessagesSent;
-    }
+    // ============================================================
+    // VALIDATION METHODS
+    // ============================================================
 
-    public int getStoredMessagesCount() {
-        return storedMessages.size();
-    }
-
-    // ---------------------------
-    // Validation helpers
-    // ---------------------------
     public boolean checkMessageID(String id) {
-        return id != null && id.length() <= 10 && id.matches("\\d+");
+        return id.length() <= 10;
     }
 
-    // SA cell regex +27XXXXXXXXX
     public boolean checkRecipientCell(String cell) {
-        if (cell == null) return false;
         return Pattern.matches("^\\+27\\d{9}$", cell);
     }
 
-    public boolean isMessageLengthValid(String msg) {
-        if (msg == null) return false;
-        return msg.length() <= 250;
+    // ============================================================
+    // MESSAGE CREATION AND HANDLING
+    // ============================================================
+
+    public String createMessageHash(String id, String messageText) {
+        String[] words = messageText.split(" ");
+        String firstWord = words.length > 0 ? words[0] : "";
+        String lastWord = words.length > 1 ? words[words.length - 1] : firstWord;
+        return id.substring(0, 2).toUpperCase() + ":" + numMessagesSent + ":" +
+                firstWord.toUpperCase() + lastWord.toUpperCase();
     }
 
-    public int getExceededBy(String msg) {
-        if (msg == null) return 0;
-        int over = msg.length() - 250;
-        return (over > 0) ? over : 0;
-    }
+    public void sendMessage() {
+        int numToSend = 0;
 
-    // ---------------------------
-    // ID and Hash creation
-    // ---------------------------
-    /**
-     * Generates a 10-digit numeric ID (string). Deterministic enough for tests.
-     */
-    public String generateMessageID() {
-        long r = Math.abs(new Random().nextLong()) % 1_000_000_0000L;
-        String id = String.format("%010d", r);
-        this.messageID = id;
-        return id;
-    }
-
-    /**
-     * Format for assignment tests:
-     * firstTwoCharsOfID : messageCount : FIRSTWORD+LASTWORD (uppercase, concatenated)
-     */
-    public String createMessageHash(String id, String messageText, int count) {
-        if (id == null) id = "00";
-        String firstTwo = id.length() >= 2 ? id.substring(0, 2) : String.format("%-2s", id).replace(' ', '0');
-        String trimmed = (messageText == null) ? "" : messageText.trim();
-        if (trimmed.isEmpty()) trimmed = "";
-        String[] words = trimmed.split("\\s+");
-        String first = (words.length > 0) ? words[0] : "";
-        String last = (words.length > 1) ? words[words.length - 1] : first;
-        String combined = (first + last).toUpperCase();
-        return firstTwo + ":" + count + ":" + combined;
-    }
-
-    // ---------------------------
-    // Interactive menu
-    // ---------------------------
-    public void mainMenu() {
-        while (true) {
-            System.out.println("\nWelcome to QuickChat");
-            System.out.println("1) Send Message");
-            System.out.println("2) Show Recently Sent Messages (Coming Soon)");
-            System.out.println("3) Quit");
-            System.out.print("Choose an option: ");
-
-            String line = scanner.nextLine().trim();
-            int choice;
+        // Ask for number of messages
+        while (numToSend <= 0) {
             try {
-                choice = Integer.parseInt(line);
+                String input = JOptionPane.showInputDialog(null,
+                        "How many messages do you want to send?",
+                        "Number of Messages",
+                        JOptionPane.QUESTION_MESSAGE);
+                if (input == null) return; // user canceled
+                numToSend = Integer.parseInt(input);
+                if (numToSend <= 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a number from the menu.");
-                continue;
+                JOptionPane.showMessageDialog(null, "Please enter a valid positive number.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+        }
+
+        // Send multiple messages
+        for (int i = 0; i < numToSend; i++) {
+            messageID = String.valueOf((long) (Math.random() * 1_000_000_0000L));
+            while (!checkMessageID(messageID)) {
+                messageID = String.valueOf((long) (Math.random() * 1_000_000_0000L));
+            }
+
+            // Recipient input
+            recipient = JOptionPane.showInputDialog(null,
+                    "Enter recipient cell number (+27XXXXXXXXX):",
+                    "Recipient Input",
+                    JOptionPane.QUESTION_MESSAGE);
+            if (recipient == null) return;
+            while (!checkRecipientCell(recipient)) {
+                recipient = JOptionPane.showInputDialog(null,
+                        "Invalid format.\nCell number must start with +27 and contain 11 digits.\nTry again:",
+                        "Invalid Cell Number",
+                        JOptionPane.ERROR_MESSAGE);
+                if (recipient == null) return;
+            }
+
+            // Message input
+            messageText = JOptionPane.showInputDialog(null,
+                    "Enter your message (max 250 characters):",
+                    "Message Input",
+                    JOptionPane.PLAIN_MESSAGE);
+            if (messageText == null) return;
+            while (messageText.length() > 250) {
+                messageText = JOptionPane.showInputDialog(null,
+                        "Message too long. Please enter under 250 characters:",
+                        "Invalid Message Length",
+                        JOptionPane.ERROR_MESSAGE);
+                if (messageText == null) return;
+            }
+
+            messageHash = createMessageHash(messageID, messageText);
+
+            // Choose action
+            String[] actions = {"Send Message", "Disregard", "Store for Later"};
+            int choice = JOptionPane.showOptionDialog(null,
+                    "What would you like to do with this message?",
+                    "Message Options",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    actions,
+                    actions[0]);
 
             switch (choice) {
-                case 1 -> interactiveSendMessage();
-                case 2 -> System.out.println("Coming Soon.");
-                case 3 -> {
-                    System.out.println("Goodbye!");
-                    System.exit(0);
+                case 0 -> {
+                    numMessagesSent++;
+                    storeMessage();
+                    printMessageDetails();
+                    JOptionPane.showMessageDialog(null, "Message sent successfully!");
                 }
-                default -> System.out.println("Invalid option, please try again.");
+                case 1 -> JOptionPane.showMessageDialog(null, "Message disregarded.");
+                case 2 -> {
+                    storeMessage();
+                    JOptionPane.showMessageDialog(null, "Message stored for later.");
+                }
+                default -> JOptionPane.showMessageDialog(null, "No action selected.");
             }
+        }
+
+        JOptionPane.showMessageDialog(null, "📨 Total messages sent: " + numMessagesSent,
+                "Summary", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // ============================================================
+    // DISPLAY & STORAGE
+    // ============================================================
+
+    public void printMessageDetails() {
+        String details = "Message ID: " + messageID +
+                "\nMessage Hash: " + messageHash +
+                "\nRecipient: " + recipient +
+                "\nMessage: " + messageText;
+        JOptionPane.showMessageDialog(null, details, "Message Details", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void storeMessage() {
+        JSONObject msgObj = new JSONObject();
+        msgObj.put("MessageID", messageID);
+        msgObj.put("MessageHash", messageHash);
+        msgObj.put("Recipient", recipient);
+        msgObj.put("Message", messageText);
+
+        storedMessages.add(msgObj);
+
+        try (FileWriter file = new FileWriter("messages.json")) {
+            file.write(storedMessages.toJSONString());
+            file.flush();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,
+                    "Error storing message: " + e.getMessage(),
+                    "File Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void interactiveSendMessage() {
-        System.out.print("How many messages do you want to send? ");
-        String countLine = scanner.nextLine().trim();
-        int num;
-        try {
-            num = Integer.parseInt(countLine);
-        } catch (NumberFormatException e) {
-            System.out.println("Please enter a numeric value.");
+    public void showStoredMessages() {
+        if (storedMessages.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "No stored messages yet.",
+                    "Stored Messages",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        for (int i = 0; i < num; i++) {
-            String id = generateMessageID();
-            while (!checkMessageID(id)) {
-                id = generateMessageID();
-            }
-
-            System.out.print("Enter recipient cell number (+27XXXXXXXXX): ");
-            String rec = scanner.nextLine().trim();
-            while (!checkRecipientCell(rec)) {
-                System.out.print("Invalid cell number. Try again: ");
-                rec = scanner.nextLine().trim();
-            }
-
-            System.out.print("Enter your message (max 250 characters): ");
-            String text = scanner.nextLine();
-            while (!isMessageLengthValid(text)) {
-                System.out.println("Please enter a message less than or equal to 250 characters.");
-                text = scanner.nextLine();
-            }
-
-            String hash = createMessageHash(id, text, numMessagesSent);
-
-            System.out.println("\nChoose what to do:");
-            System.out.println("1) Send Message");
-            System.out.println("2) Disregard Message");
-            System.out.println("3) Store Message to send later");
-            String actionLine = scanner.nextLine().trim();
-            int option;
-            try {
-                option = Integer.parseInt(actionLine);
-            } catch (NumberFormatException e) {
-                option = 2;
-            }
-
-            String result = sendAction(option, id, rec, text, hash);
-            System.out.println(result);
-
-            if (option == 1) {
-                // only show popup after a send
-                this.messageID = id;
-                this.recipient = rec;
-                this.messageText = text;
-                this.messageHash = hash;
-                printMessageDetails();
-            }
+        StringBuilder msgList = new StringBuilder("=== Stored Messages ===\n");
+        for (Object obj : storedMessages) {
+            JSONObject msg = (JSONObject) obj;
+            msgList.append("ID: ").append(msg.get("MessageID"))
+                    .append("\nRecipient: ").append(msg.get("Recipient"))
+                    .append("\nMessage: ").append(msg.get("Message"))
+                    .append("\n------------------------\n");
         }
 
-        System.out.println("\nTotal messages sent: " + numMessagesSent);
-    }
-
-    /**
-     * sendAction is unit-test-friendly: it validates inputs, performs the action,
-     * persists stored messages to messages.json, and returns a String describing result.
-     *
-     * option: 1=send, 2=discard, 3=store
-     */
-    public String sendAction(int option, String id, String rec, String text, String hash) {
-        if (id == null || !checkMessageID(id)) {
-            return "Message ID is invalid.";
-        }
-        if (!checkRecipientCell(rec)) {
-            return "Cell phone number is incorrectly formatted or does not contain an international code, please correct the number and try again.";
-        }
-        if (!isMessageLengthValid(text)) {
-            return "Message exceeds 250 characters by " + getExceededBy(text) + ", please reduce size.";
-        }
-
-        switch (option) {
-            case 1 -> {
-                // send
-                numMessagesSent++;
-                persistMessageRecord(id, rec, text, hash, "SENT");
-                return "Message successfully sent.";
-            }
-            case 2 -> {
-                // discard
-                return "Press 0 to delete message.";
-            }
-            case 3 -> {
-                // store
-                persistMessageRecord(id, rec, text, hash, "STORED");
-                return "Message successfully stored.";
-            }
-            default -> {
-                return "Invalid action selected.";
-            }
-        }
-    }
-
-    // Persist a single message record to messages.json
-    private void persistMessageRecord(String id, String rec, String text, String hash, String status) {
-        JSONObject msg = new JSONObject();
-        msg.put("MessageID", id);
-        msg.put("MessageHash", hash);
-        msg.put("Recipient", rec);
-        msg.put("Message", text);
-        msg.put("Status", status);
-        storedMessages.add(msg);
-
-        try (FileWriter fw = new FileWriter("messages.json")) {
-            fw.write(storedMessages.toJSONString());
-            fw.flush();
-        } catch (IOException e) {
-            // best-effort persistence: ignore for tests but log for interactive use
-            System.out.println("Warning: could not persist messages to file (" + e.getMessage() + ").");
-        }
-    }
-
-    public void printMessageDetails() {
-        JOptionPane.showMessageDialog(null,
-                "Message ID: " + messageID +
-                        "\nMessage Hash: " + messageHash +
-                        "\nRecipient: " + recipient +
-                        "\nMessage: " + messageText,
-                "Message Details",
-                JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, msgList.toString(), "Stored Messages", JOptionPane.INFORMATION_MESSAGE);
     }
 }

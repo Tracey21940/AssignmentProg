@@ -11,12 +11,6 @@ import org.json.simple.parser.ParseException;
 
 /**
  * RegistrationClass
- * - collects user details
- * - validates username, password, cellphone (SA format)
- * - saves last registered user to users.json (simple persistence)
- *
- * The cellphone regex pattern used was suggested via ChatGPT:
- * OpenAI. 2025. ChatGPT (GPT-5) [AI chatbot]. Available at: https://chat.openai.com (Accessed: 19 September 2025).
  */
 public class RegistrationClass {
 
@@ -121,7 +115,8 @@ public class RegistrationClass {
             return false;
         }
         // Regex: must start with +27 and followed by 9 digits
-        String regex = "^\\+27\\d{9}$"; // suggested via ChatGPT (see file header)
+        String regex = "^\\+27\\d{9}$";                //The cellphone regex pattern used was suggested via ChatGPT:
+                                                       //* OpenAI. 2025. ChatGPT (GPT-5) [AI chatbot]. Available at: https://chat.openai.com (Accessed: 19 September 2025).
         boolean isValid = Pattern.matches(regex, cellphoneNum);
 
         if (isValid) {
