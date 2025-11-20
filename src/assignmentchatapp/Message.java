@@ -30,28 +30,50 @@ public class Message {
     // MAIN MENU
     // ============================================================
     public void mainMenu() {
-        while (true) {
-            String[] options = {"Send Message", "Show recently sent messages(Coming Soon)", "Quit"};
-            int choice = JOptionPane.showOptionDialog(null,
-                    "Welcome to QuickChat! What would you like to do?",
-                    "QuickChat Main Menu",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
+    while (true) {
+        String[] options = {
+                "Send Message",
+                "Show Stored Messages",
+                "Return to Main Menu",
+                "Quit"
+        };
 
-            switch (choice) {
-                case 0 -> sendMessage();
-                case 1 -> showStoredMessages();
-                case 2, JOptionPane.CLOSED_OPTION -> {
-                    JOptionPane.showMessageDialog(null, "Goodbye!", "Exit", JOptionPane.INFORMATION_MESSAGE);
-                    System.exit(0);
-                }
-                default -> JOptionPane.showMessageDialog(null, "Invalid option selected.", "Error", JOptionPane.ERROR_MESSAGE);
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "Welcome to QuickChat! What would you like to do?",
+                "QuickChat Main Menu",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        switch (choice) {
+            case 0 -> sendMessage();
+            case 1 -> showStoredMessages();
+            case 2 -> {
+                JOptionPane.showMessageDialog(null,
+                        "Returning to Main Menu...",
+                        "Back",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return; // <--- THIS sends user back to Login Menu switch
             }
+            case 3, JOptionPane.CLOSED_OPTION -> {
+                JOptionPane.showMessageDialog(null,
+                        "Goodbye!",
+                        "Exit",
+                        JOptionPane.INFORMATION_MESSAGE);
+                System.exit(0);
+            }
+            default -> JOptionPane.showMessageDialog(null,
+                    "Invalid option selected.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
+}
+
 
     // ============================================================
     // VALIDATION METHODS

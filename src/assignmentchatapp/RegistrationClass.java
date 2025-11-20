@@ -58,8 +58,10 @@ public class RegistrationClass {
         saveUser();
 
         System.out.println("\n=== Login ===");
-        login login = new login(this);
-        login.log(); // interactive login — redirects to QuickChat on success
+
+        // NOTE: Use the correct class name 'Login' (capital L) and method loginUser()
+        Login loginObj = new Login(this);
+        loginObj.loginUser(); // interactive login — redirects to QuickChat on success
     }
 
     /**
@@ -115,8 +117,7 @@ public class RegistrationClass {
             return false;
         }
         // Regex: must start with +27 and followed by 9 digits
-        String regex = "^\\+27\\d{9}$";                //The cellphone regex pattern used was suggested via ChatGPT:
-                                                       //* OpenAI. 2025. ChatGPT (GPT-5) [AI chatbot]. Available at: https://chat.openai.com (Accessed: 19 September 2025).
+        String regex = "^\\+27\\d{9}$";                //The cellphone regex pattern used was suggested via ChatGPT
         boolean isValid = Pattern.matches(regex, cellphoneNum);
 
         if (isValid) {
